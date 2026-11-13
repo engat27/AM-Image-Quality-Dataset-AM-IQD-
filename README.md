@@ -15,6 +15,7 @@
 [Acquisition](#-specimens-and-image-acquisition) •
 [Labelling](#%EF%B8%8F-labelling) •
 [Data Format](#-data-format) •
+[Download](#-download-and-extraction) •
 [Quick Start](#-quick-start) •
 [Use Cases](#-use-cases) •
 [Citation](#-citation)
@@ -119,7 +120,7 @@ Each rater independently judged the images on their **visible surface and struct
 
 - **Format:** JPEG, 1920 × 1200 pixels
 - **Colour:** grayscale content, stored with three identical RGB channels. Convert to 8-bit grayscale with, for example, `Image.open(path).convert("L")`.
-- **Organisation:** one folder per class, `images/good/` and `images/defective/`.
+- **Organisation:** one folder per class, `images/good/` and `images/defective/` (created when extracting the archive, see [Download and Extraction](#-download-and-extraction)).
 
 ### File names
 
@@ -156,6 +157,61 @@ One row per image, with the label and the decoded process parameters:
 | `speed_mm_s`    | Printing speed (mm/s) |
 | `replica`       | Replica number (1–3) |
 | `chessboard`    | Chessboard on the build plate (1–3) |
+
+---
+
+## 📦 Download and Extraction
+
+Because of GitHub's 25 MB file size limit, the images are distributed as a single archive, `images.zip`, split into **10 parts**: `images.zip.001`, `images.zip.002`, …, `images.zip.010`.
+
+**1. Download the repository** (all 10 parts, `labels.csv` and this README):
+
+```bash
+git clone https://github.com/engat27/AM-IQD.git
+cd AM-IQD
+```
+
+or click **Code → Download ZIP** and unzip it.
+
+**2. Rejoin the parts** into the original `images.zip`, from the repository root:
+
+- **Linux / macOS**
+
+  ```bash
+  cat images.zip.0* > images.zip
+  ```
+
+- **Windows (Command Prompt)**
+
+  ```bat
+  copy /b images.zip.001+images.zip.002+images.zip.003+images.zip.004+images.zip.005+images.zip.006+images.zip.007+images.zip.008+images.zip.009+images.zip.010 images.zip
+  ```
+
+  Alternatively, open `images.zip.001` with [7-Zip](https://www.7-zip.org/): it reads the other parts automatically.
+
+**3. (Optional) Verify the archive.** Its SHA-256 checksum must be:
+
+```
+c90aa7e3bc5d220674e2dca6b53f10ae7a74279ebc0a23113201794d96defb7d
+```
+
+Use `sha256sum images.zip` (Linux), `shasum -a 256 images.zip` (macOS) or `certutil -hashfile images.zip SHA256` (Windows).
+
+**4. Extract `images.zip` in the repository root:**
+
+```bash
+unzip images.zip
+```
+
+This creates the `images/` folder:
+
+```
+images/
+├── good/          # 166 images
+└── defective/     # 70 images
+```
+
+The paths in `labels.csv` (e.g. `images/good/...`) and the Quick Start examples below assume this folder sits next to `labels.csv`.
 
 ---
 
@@ -205,12 +261,20 @@ img = Image.open(df.loc[0, "filename"]).convert("L")
 
 ```
 AM-IQD/
-├── images/
-│   ├── good/          # 166 images (label 1)
-│   └── defective/     # 70 images (label 0)
+├── images.zip.001     # Image archive, split into 10 parts
+├── ...
+├── images.zip.010
 ├── assets/            # Figures used in this README
 ├── labels.csv         # Labels and process parameters for each image
 └── README.md
+```
+
+After [rejoining and extracting](#-download-and-extraction) the archive, the images are in:
+
+```
+images/
+├── good/              # 166 images (label 1)
+└── defective/         # 70 images (label 0)
 ```
 
 ---
